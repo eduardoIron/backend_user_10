@@ -1,12 +1,11 @@
-const {Router} = require('express');
-const {check} = require('express-validator');
+const { Router } = require('express');
+const { check } = require('express-validator');
 
 const {
-    verificarAdmin,
     validarCampo,
-    validarJWT
-
-} = require('../middlewares');
+    validarJWT,
+    verificarAdmin
+} = require('../middlewares'); 
 
 const {
     usuariosGet,
@@ -19,24 +18,26 @@ const router = Router();
 
 router.get('/', usuariosGet);
 
-router.post('/',[
-    check('nombre', 'El nombre es obligatorio'). not().isEmpty(),
+router.post('/', [
+    check('nombre', 'El nombre es obligatorio').not().isEmpty(),
     check('pass', 'La contraseña es obligatoria').not().isEmpty(),
     check('correo', 'El correo es obligatorio').not().isEmpty(),
+    check('correo', 'No es un correo válido').isEmail(),
+    // Comment these two lines out if you need to create the FIRST admin
+    // validarJWT,      
+    // verificarAdmin,  
     validarCampo
-],usuariosPost);
+], usuariosPost);
 
-router.put('/:id',[
+router.put('/:id', [
     validarJWT,
     validarCampo,
 ], usuariosPut);
 
-router.delete('/',[
+router.delete('/:id', [
     validarJWT,
-    validarCampo,
-    verificarAdmin
+    verificarAdmin,
+    validarCampo
 ], usuariosDelete);
 
 module.exports = router;
-
-//en el post despues de yo colocar los chek, debo colocar en orden los middleweres, validartoke, validar admin, validarcampos
