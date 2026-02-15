@@ -20,12 +20,11 @@ router.get('/', usuariosGet);
 
 router.post('/', [
     check('nombre', 'El nombre es obligatorio').not().isEmpty(),
-    check('pass', 'La contraseña es obligatoria').not().isEmpty(),
     check('correo', 'El correo es obligatorio').not().isEmpty(),
+    check('pass', 'La contraseña es obligatoria').not().isEmpty(),
     check('correo', 'No es un correo válido').isEmail(),
-    // Comment these two lines out if you need to create the FIRST admin
-    // validarJWT,      
-    // verificarAdmin,  
+    //validarJWT,      
+    //verificarAdmin,  
     validarCampo
 ], usuariosPost);
 
@@ -36,7 +35,7 @@ router.put('/:id', [
 
 router.delete('/:id', [
     validarJWT,
-    verificarAdmin,
+  // verificarAdmin,
     validarCampo
 ], usuariosDelete);
 

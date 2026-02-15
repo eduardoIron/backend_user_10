@@ -16,7 +16,6 @@ const Bitacora = db.define(
     }
 );
 
-// Relationship
 Bitacora.belongsTo(Usuario, { foreignKey: 'id_usuario' });
 
 module.exports = Bitacora;

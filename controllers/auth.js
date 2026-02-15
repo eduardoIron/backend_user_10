@@ -26,7 +26,7 @@ const login = async (req, res = response) => {
         
         if (!validPassword) {
             return res.status(400).json({
-                msg: "Contraseña incorrecta",
+                msg: "Contraseña incorrectaahhhh",
             });
         }
 

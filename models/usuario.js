@@ -40,17 +40,18 @@ const Usuario = db.define(
         },
         estado: {
             type: DataTypes.TINYINT,
-            defaultValue: 1, // 1 = Active, 0 = Deleted
+            defaultValue: 1, 
         },
         rol: {
             type: DataTypes.ENUM("USER", "ADMIN_USER"),
             defaultValue: "USER",
             allowNull: false,
         },
+
     },
     {
         freezeTableName: true,
-        timestamps: true,
+        timestamps: true
     }
 );
 

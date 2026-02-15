@@ -24,7 +24,7 @@ class Server {
         try {
             await db.authenticate();
 
-            await db.sync({ force: false }); 
+            await db.sync(); 
             console.log('Conexion exitosa con la base de datos');
         } catch (error) {
             throw new Error(error);
