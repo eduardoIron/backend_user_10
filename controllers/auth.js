@@ -5,57 +5,59 @@ const Usuario = require("../models/usuario");
 const { generarJWT } = require("../helpers/generar-jwt");
 
 const login = async (req, res = response) => {
-    const { correo, pass, numCuenta } = req.body;
+
+    const { correo, numCuenta, acceso, pass } = req.body;
+
+    const terminoBusqueda = correo || numCuenta ;
 
     try {
-
-        //const usuario = await Usuario.findOne({ where: { correo} });
-
         const usuario = await Usuario.findOne({
             where: {
                 [Op.or]: [
-                    { correo: correo || '' },     
-                    { numCuenta: numCuenta || '' }
+                    { correo: terminoBusqueda },
+                    { numCuenta: terminoBusqueda }
                 ]
             }
         });
 
-        console.log(`NumCuenta: ${numCuenta}`);
-        console.log(`Correo: ${correo}`);
-        
         if (!usuario) {
             return res.status(400).json({
-                msg: "Usuario no encontrado - verifique Correo/Numero de cuenta",
+                msg: 'Usuario no encontrado'
             });
         }
 
-        if (!usuario.estado) {
+        if(!usuario.estado){
             return res.status(400).json({
-                msg: "Usuario inactivo (Baja)",
+                msg: "Usuario inactivo",
             });
         }
-
         const validPassword = bcryptjs.compareSync(pass, usuario.pass);
+      
+       if (!validPassword) {
+           return res.status(400).json({
+               msg: "Contraseña incorrectaahhhh",
+           });
+       }
+
+
+       const token = await generarJWT(usuario.id);
+
+
+       res.json({
+           usuario,
+           token,
+       });
+
+
         
-        if (!validPassword) {
-            return res.status(400).json({
-                msg: "Contraseña incorrectaahhhh",
-            });
-        }
 
-        const token = await generarJWT(usuario.id);
-
-        res.json({
-            usuario,
-            token,
-        });
 
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            msg: "Error al iniciar sesion intente mas tarde",
+            msg: 'Error en el servidor al buscar usuario'
         });
     }
-};
+}
 
 module.exports = { login };
