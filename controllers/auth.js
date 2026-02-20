@@ -1,48 +1,63 @@
+const { Op } = require('sequelize');
 const { response } = require("express");
 const bcryptjs = require("bcryptjs");
 const Usuario = require("../models/usuario");
 const { generarJWT } = require("../helpers/generar-jwt");
 
 const login = async (req, res = response) => {
-    const { correo, pass } = req.body;
+
+    const { correo, numCuenta, acceso, pass } = req.body;
+
+    const terminoBusqueda = correo || numCuenta ;
 
     try {
+        const usuario = await Usuario.findOne({
+            where: {
+                [Op.or]: [
+                    { correo: terminoBusqueda },
+                    { numCuenta: terminoBusqueda }
+                ]
+            }
+        });
 
-        const usuario = await Usuario.findOne({ where: { correo } });
-        
         if (!usuario) {
             return res.status(400).json({
-                msg: "Usuario no encontrado - verifique correo",
+                msg: 'Usuario no encontrado'
             });
         }
 
-        if (!usuario.estado) {
+        if(!usuario.estado){
             return res.status(400).json({
-                msg: "Usuario inactivo (Baja)",
+                msg: "Usuario inactivo",
             });
         }
-
         const validPassword = bcryptjs.compareSync(pass, usuario.pass);
+      
+       if (!validPassword) {
+           return res.status(400).json({
+               msg: "Contraseña incorrectaahhhh",
+           });
+       }
+
+
+       const token = await generarJWT(usuario.id);
+
+
+       res.json({
+           usuario,
+           token,
+       });
+
+
         
-        if (!validPassword) {
-            return res.status(400).json({
-                msg: "Contraseña incorrectaahhhh",
-            });
-        }
 
-        const token = await generarJWT(usuario.id);
-
-        res.json({
-            usuario,
-            token,
-        });
 
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            msg: "Hable con el administrador",
+            msg: 'Error en el servidor al buscar usuario'
         });
     }
-};
+}
 
 module.exports = { login };
