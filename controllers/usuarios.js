@@ -4,7 +4,7 @@ const Usuario = require("../models/usuario");
 const Bitacora = require("../models/bitacora");
 const {json} = require('sequelize');
 
-
+//prueba git
 
 const usuariosGet = async (req, res) => {
     const usuarios = await Usuario.findAll();
@@ -16,19 +16,31 @@ const usuariosPost = async (req = request, res = response) => {
     const { nombre, correo, pass, rol, numCuenta, numCelular } = req.body;
 
     try {
-        const usuario = Usuario.build({ 
+        // const usuario = Usuario.build({ 
+        //     nombre, 
+        //     correo, 
+        //     pass, 
+        //     rol, 
+        //     numCuenta, 
+        //     numCelular 
+        // });
+
+        // const salt = bcryptjs.genSaltSync();
+        // usuario.pass = bcryptjs.hashSync(pass, salt);
+
+        // await usuario.save();
+        const salt = bcryptjs.genSaltSync();
+        const hashedPassword = bcryptjs.hashSync(pass, salt);
+
+        const usuario = await Usuario.create({ 
             nombre, 
             correo, 
-            pass, 
+            pass: hashedPassword, 
             rol, 
             numCuenta, 
             numCelular 
         });
 
-        const salt = bcryptjs.genSaltSync();
-        usuario.pass = bcryptjs.hashSync(pass, salt);
-
-        await usuario.save();
 
         res.json({
             usuario
